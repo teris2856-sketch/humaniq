@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125703491571",
+    "project_id": "humaniq-953d7",
+    "storage_bucket": "humaniq-953d7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125703491571:android:6251bc57b5af6dbdb18c86",
+        "android_client_info": {
+          "package_name": "com.jenay_teris.swiftspeak"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDSr3KPlFydR1iLCpmXMiq1IesSe2dKA-Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
