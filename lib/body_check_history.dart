@@ -73,7 +73,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: selectedMonth,
+                      initialValue: selectedMonth,
                       decoration: InputDecoration(
                         labelText: "Month",
                         border: OutlineInputBorder(
@@ -98,7 +98,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: selectedYear,
+                      initialValue: selectedYear,
                       decoration: InputDecoration(
                         labelText: "Year",
                         border: OutlineInputBorder(

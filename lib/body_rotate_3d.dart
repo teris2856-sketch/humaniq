@@ -75,9 +75,9 @@ class BodyRotate3D extends StatelessWidget {
       case BodyBoxFace.back:
         return 'Back';
       case BodyBoxFace.sideLeft:
-        return 'Right side';
+        return 'Left Side';
       case BodyBoxFace.sideRight:
-        return 'Left side';
+        return 'Right Side';
     }
   }
 

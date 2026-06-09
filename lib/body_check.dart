@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:swiftspeak/body_check_history.dart';
 import 'package:swiftspeak/body_check_results.dart';
 import 'package:swiftspeak/body_check_service.dart';
+import 'package:swiftspeak/body_anatomy_anchors.dart';
+import 'package:swiftspeak/body_glb_viewer.dart';
 import 'package:swiftspeak/body_rotate_3d.dart';
 
 enum PainLevel {
@@ -29,51 +31,29 @@ class _BodyCheckState extends State<BodyCheck> {
   /// Yaw (radians) around vertical axis — horizontal drag only.
   double _rotationY = 0;
 
-  final Map<String, Offset> _frontPainPointPositions = const {
-    'Head': Offset(0.50, 0.04),
-    'Neck': Offset(0.50, 0.13),
-    'LeftShoulder': Offset(0.22, 0.16),
-    'Right Shoulder': Offset(0.78, 0.16),
-    'Chest': Offset(0.50, 0.24),
-    'LeftElbow': Offset(0.17, 0.32),
-    'RightElbow': Offset(0.83, 0.32),
-    'LeftHand': Offset(0.11, 0.46),
-    'RightHand': Offset(0.89, 0.46),
-    'Stomach': Offset(0.50, 0.37),
-    'spot9': Offset(0.50, 0.46),
-    'LeftThigh': Offset(0.41, 0.58),
-    'RightThigh': Offset(0.59, 0.58),
-    'LeftKnee': Offset(0.38, 0.71),
-    'RightKnee': Offset(0.62, 0.71),
-    'LeftShin': Offset(0.36, 0.82),
-    'RightShin': Offset(0.64, 0.82),
-    'LeftFoot': Offset(0.33, 0.96),
-    'RightFoot': Offset(0.67, 0.96),
-  };
-  final Map<String, Offset> _backPainPointPositions = const {
-    'BackHead': Offset(0.50, 0.04),
-    'BackNeck': Offset(0.50, 0.13),
-    'BackLeftShoulder': Offset(0.22, 0.16),
-    'BackRightShoulder': Offset(0.78, 0.16),
-    'UpperBack': Offset(0.50, 0.24),
-    'BackLeftElbow': Offset(0.17, 0.32),
-    'BackRightElbow': Offset(0.83, 0.32),
-    'BackLeftHand': Offset(0.11, 0.46),
-    'BackRightHand': Offset(0.89, 0.46),
-    'MidBack': Offset(0.50, 0.34),
-    'LowerBack': Offset(0.50, 0.43),
-    'BackLeftThigh': Offset(0.41, 0.58),
-    'BackRightThigh': Offset(0.59, 0.58),
-    'BackLeftKnee': Offset(0.38, 0.71),
-    'BackRightKnee': Offset(0.62, 0.71),
-    'BackLeftShin': Offset(0.36, 0.82),
-    'BackRightShin': Offset(0.64, 0.82),
-    'BackLeftFoot': Offset(0.33, 0.96),
-    'BackRightFoot': Offset(0.67, 0.96),
-  };
+  Map<String, PainLevel> _levelsForAnchor(String id) {
+    if (BodyAnatomyProjection.isSideId(id)) return _sidePainLevels;
+    if (BodyAnatomyProjection.isBackId(id)) return _backPainLevels;
+    return _frontPainLevels;
+  }
 
   static String _spotLabel(String id) {
     if (id == 'spot9') return 'Lower abdomen';
+    if (id == 'LeftHip' || id == 'RightHip') {
+      return id == 'LeftHip' ? 'Left hip' : 'Right hip';
+    }
+    if (id == 'LeftElbow' || id == 'RightElbow') {
+      return id == 'LeftElbow' ? 'Left upper arm' : 'Right upper arm';
+    }
+    if (id == 'LeftHand' || id == 'RightHand') {
+      return id == 'LeftHand' ? 'Left forearm' : 'Right forearm';
+    }
+    if (id.endsWith('Palm')) {
+      return id.contains('Left') ? 'Left hand' : 'Right hand';
+    }
+    if (id.contains('Knee') && id.startsWith('Side')) {
+      return 'Lower leg';
+    }
     var s = id;
     if (s.startsWith('Side')) s = s.substring(4);
     if (s.startsWith('Back')) s = s.substring(4);
@@ -198,32 +178,42 @@ class _BodyCheckState extends State<BodyCheck> {
     );
   }
 
-  Widget _painMarkersLayer({
-    required Map<String, Offset> positions,
-    required Map<String, PainLevel> levels,
-    bool mirrorX = false,
-    double markerHalfExtent = 17,
+  Widget _rotatingPainMarkersLayer({
+    required double rotationY,
+    required double viewportShortSide,
     bool showTooltips = false,
   }) {
+    final markerHalfExtent =
+        (viewportShortSide * 0.038).clamp(12.0, 15.0);
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final w = constraints.maxWidth;
         final h = constraints.maxHeight;
+        final markers = <Widget>[];
+
+        final anchors =
+            BodyAnatomyProjection.anchorsForRotation(rotationY);
+        for (final anchor in anchors) {
+          final projected = BodyAnatomyProjection.project(anchor, rotationY);
+          if (projected == null) continue;
+          markers.add(
+            _buildFacePainButton(
+              anchor.id,
+              projected,
+              w,
+              h,
+              _levelsForAnchor(anchor.id),
+              halfExtent: markerHalfExtent,
+              showTooltip: showTooltips,
+            ),
+          );
+        }
+
         return Stack(
           clipBehavior: Clip.none,
           fit: StackFit.expand,
-          children: [
-            for (final e in positions.entries)
-              _buildFacePainButton(
-                e.key,
-                mirrorX ? Offset(1.0 - e.value.dx, e.value.dy) : e.value,
-                w,
-                h,
-                levels,
-                halfExtent: markerHalfExtent,
-                showTooltip: showTooltips,
-              ),
-          ],
+          children: markers,
         );
       },
     );
@@ -268,270 +258,262 @@ class _BodyCheckState extends State<BodyCheck> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.lightBlue[100],
-          title: const Text("Body Check"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => const BodyCheckHistory()),
-                );
-              },
-              child: const Text(
-                "History",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 21,
+      appBar: AppBar(
+        backgroundColor: Colors.lightBlue[100],
+        title: const Text("Body Check"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => const BodyCheckHistory()),
+              );
+            },
+            child: const Text(
+              "History",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 21,
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 4),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                  "Drag horizontally to rotate. Markers track the body — Front, Back, Left Side, and Right Side.",
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w600,
                 ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 6),
+            Expanded(
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 360),
+                  child: Container(
+                    width: 360,
+                    margin: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+                    decoration: _cardDecoration,
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        const aspect = 0.86;
+                        const fill = 0.99;
+                        final maxW = constraints.maxWidth;
+                        final maxH = constraints.maxHeight;
+
+                        double figW = maxW * fill;
+                        double figH = figW / aspect;
+                        if (figH > maxH * fill) {
+                          figH = maxH * fill;
+                          figW = figH * aspect;
+                        }
+
+                        var scale = 1.0;
+                        if (figH < maxH * fill) {
+                          scale = math.min(
+                            (maxH * fill) / figH,
+                            1.22,
+                          );
+                        }
+
+                        final face =
+                        BodyRotate3D.dominantFaceTowardCamera(
+                          _rotationY,
+                        );
+                        final viewLabel =
+                        BodyRotate3D.viewLabelForFace(face);
+
+                        return ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Stack(
+                            fit: StackFit.expand,
+                            clipBehavior: Clip.none,
+                            children: [
+                              const Positioned.fill(
+                                child: DecoratedBox(
+                                  decoration: BoxDecoration(
+                                    color: Color(0xFF121E36),
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: Transform.scale(
+                                  scale: scale,
+                                  child: SizedBox(
+                                    width: figW,
+                                    height: figH,
+                                    child: BodyGlbViewer(
+                                      rotationY: _rotationY,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: Listener(
+                                  behavior: HitTestBehavior.translucent,
+                                  onPointerMove: (e) {
+                                    if (!e.down) return;
+                                    setState(() {
+                                      _rotationY += e.delta.dx * 0.0065;
+                                    });
+                                  },
+                                  onPointerUp: (_) {
+                                    setState(() {
+                                      _rotationY = BodyRotate3D.snapRotationY(
+                                        _rotationY,
+                                      );
+                                    });
+                                  },
+                                  onPointerCancel: (_) {
+                                    setState(() {
+                                      _rotationY = BodyRotate3D.snapRotationY(
+                                        _rotationY,
+                                      );
+                                    });
+                                  },
+                                  child: const SizedBox.expand(),
+                                ),
+                              ),
+                              Center(
+                                child: Transform.scale(
+                                  scale: scale,
+                                  child: SizedBox(
+                                    width: figW,
+                                    height: figH,
+                                    child: Stack(
+                                      fit: StackFit.expand,
+                                      clipBehavior: Clip.none,
+                                      children: [
+                                        _rotatingPainMarkersLayer(
+                                          rotationY: _rotationY,
+                                          viewportShortSide: math.min(figW, figH),
+                                          showTooltips: true,
+                                        ),
+                                        Positioned(
+                                          top: -22,
+                                          left: 0,
+                                          right: 0,
+                                          child: Text(
+                                            viewLabel,
+                                            textAlign: TextAlign.center,
+                                            style: const TextStyle(
+                                              color: Color(0xFFE8FDFF),
+                                              fontSize: 15,
+                                              fontWeight: FontWeight.w700,
+                                              letterSpacing: 0.3,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned(
+                                left: 0,
+                                right: 0,
+                                bottom: 6,
+                                child: Text(
+                                  'Drag left or right to rotate',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                    color: Colors.grey[400],
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(0, 12, 0, 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    child: Column(
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.all(1.0),
+                          child: Text(
+                            "Pain Level",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            CircleAvatar(
+                              radius: 10,
+                              backgroundImage: NetworkImage(
+                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRISgUY1LYyDbI6iMh6s2JuDGdewgUgYSs9Ag&s",
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("Low"),
+                            ),
+                            CircleAvatar(
+                              radius: 10,
+                              backgroundImage: NetworkImage(
+                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNpQQIlRMWZLe4IuUKjstO0pVXmvCLP8A3lg&s",
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("Moderate"),
+                            ),
+                            CircleAvatar(
+                              radius: 10,
+                              backgroundImage: NetworkImage(
+                                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZwznd8328FB3mHv3HorzAnwKy6w0KxXjREg&s",
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Text("High"),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
+                    child: ElevatedButton(
+                      onPressed: _submit,
+                      child: const Text(
+                        "Submit",
+                        style: TextStyle(fontSize: 18.0),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
         ),
-        body: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              const SizedBox(height: 4),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Text(
-                  "Drag horizontally to rotate. Release to snap to front (0°), left or right side (±90°), or back (180°). Pain dots are on the front and back only.",
-                  style: const TextStyle(
-                    fontSize: 13.5,
-                    fontWeight: FontWeight.w600,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Expanded(
-                child: Center(
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 360),
-                    child: Container(
-                      width: 360,
-                      margin: const EdgeInsets.symmetric(horizontal: 12),
-                      padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-                      decoration: _cardDecoration,
-                      child: LayoutBuilder(
-                        builder: (context, constraints) {
-                          const aspect = 0.86;
-                          const fill = 0.97;
-                          final maxW = constraints.maxWidth;
-                          final maxH = constraints.maxHeight;
-
-                          double figW = maxW * fill;
-                          double figH = figW / aspect;
-                          if (figH > maxH * fill) {
-                            figH = maxH * fill;
-                            figW = figH * aspect;
-                          }
-
-                          var scale = 1.0;
-                          if (figH < maxH * fill) {
-                            scale = math.min(
-                              (maxH * fill) / figH,
-                              1.14,
-                            );
-                          }
-
-                          final face =
-                              BodyRotate3D.dominantFaceTowardCamera(
-                            _rotationY,
-                          );
-                          final viewLabel =
-                              BodyRotate3D.viewLabelForFace(face);
-
-                          return ClipRRect(
-                            borderRadius: BorderRadius.circular(16),
-                            child: Stack(
-                              fit: StackFit.expand,
-                              clipBehavior: Clip.none,
-                              children: [
-                                Positioned.fill(
-                                  child: Listener(
-                                    behavior: HitTestBehavior.opaque,
-                                    onPointerMove: (e) {
-                                      if (!e.down) return;
-                                      setState(() {
-                                        _rotationY += e.delta.dx * 0.0065;
-                                      });
-                                    },
-                                    onPointerUp: (_) {
-                                      setState(() {
-                                        _rotationY =
-                                            BodyRotate3D.snapRotationY(
-                                          _rotationY,
-                                        );
-                                      });
-                                    },
-                                    onPointerCancel: (_) {
-                                      setState(() {
-                                        _rotationY =
-                                            BodyRotate3D.snapRotationY(
-                                          _rotationY,
-                                        );
-                                      });
-                                    },
-                                    child: const DecoratedBox(
-                                      decoration: BoxDecoration(
-                                        color: Color(0xFF121E36),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Center(
-                                  child: Transform.scale(
-                                    scale: scale,
-                                    child: SizedBox(
-                                      width: figW,
-                                      height: figH,
-                                      child: Stack(
-                                        fit: StackFit.expand,
-                                        clipBehavior: Clip.none,
-                                        children: [
-                                          BodyRotate3D(
-                                            rotationY: _rotationY,
-                                            width: figW,
-                                            height: figH,
-                                            frontOverlay:
-                                                face == BodyBoxFace.front
-                                                    ? _painMarkersLayer(
-                                                        positions:
-                                                            _frontPainPointPositions,
-                                                        levels:
-                                                            _frontPainLevels,
-                                                        showTooltips: true,
-                                                      )
-                                                    : null,
-                                            backOverlay:
-                                                face == BodyBoxFace.back
-                                                    ? _painMarkersLayer(
-                                                        positions:
-                                                            _backPainPointPositions,
-                                                        levels:
-                                                            _backPainLevels,
-                                                        showTooltips: true,
-                                                      )
-                                                    : null,
-                                            sideLeftOverlay: null,
-                                            sideRightOverlay: null,
-                                          ),
-                                          Positioned(
-                                            top: -22,
-                                            left: 0,
-                                            right: 0,
-                                            child: Text(
-                                              viewLabel,
-                                              textAlign: TextAlign.center,
-                                              style: const TextStyle(
-                                                color: Color(0xFFE8FDFF),
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.w700,
-                                                letterSpacing: 0.3,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                Positioned(
-                                  left: 0,
-                                  right: 0,
-                                  bottom: 6,
-                                  child: Text(
-                                    'Drag left or right to rotate',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                      color: Colors.grey[400],
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(0, 12, 0, 16),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(10, 0, 0, 0),
-                      child: Column(
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.all(1.0),
-                            child: Text(
-                              "Pain Level",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: const [
-                              CircleAvatar(
-                                radius: 10,
-                                backgroundImage: NetworkImage(
-                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRISgUY1LYyDbI6iMh6s2JuDGdewgUgYSs9Ag&s",
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("Low"),
-                              ),
-                              CircleAvatar(
-                                radius: 10,
-                                backgroundImage: NetworkImage(
-                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNpQQIlRMWZLe4IuUKjstO0pVXmvCLP8A3lg&s",
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("Moderate"),
-                              ),
-                              CircleAvatar(
-                                radius: 10,
-                                backgroundImage: NetworkImage(
-                                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRZwznd8328FB3mHv3HorzAnwKy6w0KxXjREg&s",
-                                ),
-                              ),
-                              Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text("High"),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(0, 0, 10, 0),
-                      child: ElevatedButton(
-                        onPressed: _submit,
-                        child: const Text(
-                          "Submit",
-                          style: TextStyle(fontSize: 18.0),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+      ),
     );
+  }
   }

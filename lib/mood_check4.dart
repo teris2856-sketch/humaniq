@@ -68,7 +68,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: selectedMonth,
+                      initialValue: selectedMonth,
                       decoration: InputDecoration(
                         labelText: "Month",
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
@@ -82,7 +82,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: selectedYear,
+                      initialValue: selectedYear,
                       decoration: InputDecoration(
                         labelText: "Year",
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
