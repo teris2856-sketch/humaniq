@@ -97,6 +97,7 @@ class _BodyCheckResultsState extends State<BodyCheckResults> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
         title: const Text("Body Check Results"),
       ),
       body: SafeArea(
@@ -210,7 +211,7 @@ class _BodyCheckResultsState extends State<BodyCheckResults> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(width: 2),
-        color: Colors.lightBlue[100],
+        color: Colors.blueAccent.shade100,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Text(

@@ -149,7 +149,7 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
 
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue[100],
+        backgroundColor: Colors.blueAccent,
         title: const Text('Profile'),
       ),
       body: _loading
@@ -185,7 +185,8 @@ class _PatientProfilePageState extends State<PatientProfilePage> {
                       ElevatedButton(
                         onPressed: _savingName ? null : _saveDisplayName,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightBlue[300],
+                          backgroundColor: Colors.blueAccent,
+                          foregroundColor: Colors.white,
                         ),
                         child: Text(
                           _savingName ? 'Saving…' : 'Save display name',

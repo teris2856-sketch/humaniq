@@ -72,6 +72,10 @@ class _MoodCheck3State extends State<MoodCheck3> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: const Text('Mood Check Results'),
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(16.0),
@@ -135,7 +139,7 @@ class _MoodCheck3State extends State<MoodCheck3> {
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           border: Border.all(width: 2),
-          color: Colors.lightBlue[100],
+          color: Colors.blueAccent.shade100,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Column(

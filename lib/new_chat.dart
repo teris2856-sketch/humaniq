@@ -217,7 +217,7 @@ class _NewChatState extends State<NewChat> {
         padding: const EdgeInsets.all(14),
         constraints: const BoxConstraints(maxWidth: 280),
         decoration: BoxDecoration(
-          color: isUser ? Colors.lightBlue[300] : Colors.white,
+          color: isUser ? Colors.blueAccent.shade100 : Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(text, style: const TextStyle(fontSize: 16)),
@@ -230,13 +230,13 @@ class _NewChatState extends State<NewChat> {
     final chatId = _chatId;
 
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: Colors.blueAccent.withValues(alpha: 0.08),
 
       drawer: Drawer(
         child: Column(
           children: [
             DrawerHeader(
-              decoration: BoxDecoration(color: Colors.lightBlue[600]),
+              decoration: const BoxDecoration(color: Colors.blueAccent),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -254,7 +254,8 @@ class _NewChatState extends State<NewChat> {
                     icon: const Icon(Icons.add),
                     label: const Text("New Chat"),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.lightBlue[400],
+                      backgroundColor: Colors.blueAccent,
+                      foregroundColor: Colors.white,
                       minimumSize: const Size(double.infinity, 42),
                     ),
                     onPressed: _isLoading ? null : _createNewAndOpen,
@@ -288,7 +289,7 @@ class _NewChatState extends State<NewChat> {
                       final selected = d.id == chatId;
 
                       return ListTile(
-                        leading: const Icon(Icons.chat_bubble_outline, color: Colors.blue),
+                        leading: const Icon(Icons.chat_bubble_outline, color: Colors.blueAccent),
                         title: Text(
                           title,
                           maxLines: 1,
@@ -323,7 +324,7 @@ class _NewChatState extends State<NewChat> {
 
       appBar: AppBar(
         title: const Text('AI Chatbot'),
-        backgroundColor: Colors.lightBlue[600],
+        backgroundColor: Colors.blueAccent,
       ),
 
       body: SafeArea(
@@ -337,7 +338,7 @@ class _NewChatState extends State<NewChat> {
                   "AI Recommendation",
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
                 onPressed: (_isLoading || chatId == null) ? null : _generateAiRecommendation,
               ),
             ),
@@ -396,7 +397,7 @@ class _NewChatState extends State<NewChat> {
                   ),
                   const SizedBox(width: 8),
                   IconButton(
-                    icon: const Icon(Icons.send, color: Colors.lightBlue, size: 30),
+                    icon: const Icon(Icons.send, color: Colors.blueAccent, size: 30),
                     onPressed: (_isLoading || chatId == null) ? null : _sendUserMessage,
                   ),
                 ],
@@ -407,7 +408,7 @@ class _NewChatState extends State<NewChat> {
               padding: const EdgeInsets.only(bottom: 10),
               child: ElevatedButton(
                 onPressed: chatId == null ? null : _speakLastAppMessage,
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.lightBlue[600]),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.blueAccent),
                 child: const Text("Text-to-Speech", style: TextStyle(fontSize: 18)),
               ),
             ),

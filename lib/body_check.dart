@@ -259,7 +259,7 @@ class _BodyCheckState extends State<BodyCheck> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue[100],
+        backgroundColor: Colors.blueAccent,
         title: const Text("Body Check"),
         actions: [
           TextButton(
@@ -271,7 +271,7 @@ class _BodyCheckState extends State<BodyCheck> {
             child: const Text(
               "History",
               style: TextStyle(
-                color: Colors.black,
+                color: Colors.white,
                 fontSize: 21,
               ),
             ),

@@ -20,9 +20,32 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    const bannerBlue = Colors.blueAccent;
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Login(),
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: bannerBlue),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: bannerBlue,
+          foregroundColor: Colors.white,
+          iconTheme: IconThemeData(color: Colors.white),
+          actionsIconTheme: IconThemeData(color: Colors.white),
+        ),
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: bannerBlue,
+            foregroundColor: Colors.white,
+          ),
+        ),
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: bannerBlue,
+          foregroundColor: Colors.white,
+        ),
+        progressIndicatorTheme: const ProgressIndicatorThemeData(
+          color: bannerBlue,
+        ),
+      ),
+      home: const Login(),
     );
   }
 }

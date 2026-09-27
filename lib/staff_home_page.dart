@@ -3,16 +3,142 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:swiftspeak/login.dart';
 
-String _staffPatientListTitle(Map<String, dynamic> data, String uid) {
-  final displayName = data['displayName'] as String?;
-  if (displayName != null && displayName.trim().isNotEmpty) {
-    return displayName.trim();
+const _kPlaceholderPatientNames = [
+  'Maya Thompson',
+  'James Okonkwo',
+  'Sofia Alvarez',
+  'Liam Chen',
+  'Ava Patel',
+  'Noah Williams',
+  'Harper Kim',
+  'Ethan Brooks',
+  'Zoe Nguyen',
+  'Owen Garcia',
+  'Nora Singh',
+  'Caleb Foster',
+];
+
+const _kPlaceholderLastNames = [
+  'Thompson',
+  'Okonkwo',
+  'Alvarez',
+  'Chen',
+  'Patel',
+  'Williams',
+  'Kim',
+  'Brooks',
+  'Nguyen',
+  'Garcia',
+  'Singh',
+  'Foster',
+];
+
+String _placeholderPatientName(int index) {
+  return _kPlaceholderPatientNames[index % _kPlaceholderPatientNames.length];
+}
+
+String _placeholderLastName(int index) {
+  return _kPlaceholderLastNames[index % _kPlaceholderLastNames.length];
+}
+
+String _capitalizeNamePart(String word) {
+  final trimmed = word.trim();
+  if (trimmed.isEmpty) return '';
+  if (trimmed.contains("'")) {
+    return trimmed.split("'").map(_capitalizeNamePart).join("'");
   }
-  final email = data['email'] as String?;
-  if (email != null && email.trim().isNotEmpty) {
-    return email.trim();
+  final letters = trimmed.replaceAll(RegExp(r'[^A-Za-z]'), '');
+  if (letters.isEmpty) return '';
+  return letters[0].toUpperCase() + letters.substring(1).toLowerCase();
+}
+
+List<String> _patientNameParts(String raw) {
+  var text = raw.trim();
+  if (text.contains('@')) {
+    text = text.split('@').first;
   }
-  return 'Patient (${uid.length >= 8 ? uid.substring(0, 8) : uid}…)';
+  text = text.replaceAll(RegExp(r'[._\-]+'), ' ');
+  const skip = {'patient', 'user', 'test', 'admin', 'jenay'};
+  return text
+      .split(RegExp(r'\s+'))
+      .map(_capitalizeNamePart)
+      .where((part) => part.length >= 2 && !skip.contains(part.toLowerCase()))
+      .toList();
+}
+
+String _properPatientName({
+  required Map<String, dynamic> data,
+  required int index,
+}) {
+  final displayName = (data['displayName'] as String?)?.trim() ?? '';
+  final email = (data['email'] as String?)?.trim() ?? '';
+  final parts = _patientNameParts(
+    displayName.isNotEmpty ? displayName : email,
+  );
+  final looksLikeJenay = '$displayName $email'.toLowerCase().contains('jenay');
+  if (parts.isEmpty || looksLikeJenay) {
+    return _placeholderPatientName(index);
+  }
+  if (parts.length == 1) {
+    return '${parts.first} ${_placeholderLastName(index)}';
+  }
+  return parts.join(' ');
+}
+
+List<String> _uniqueStaffPatientTitles(
+  List<QueryDocumentSnapshot<Map<String, dynamic>>> docs,
+) {
+  final used = <String>{};
+  final titles = <String>[];
+  for (var i = 0; i < docs.length; i++) {
+    var title = _properPatientName(data: docs[i].data(), index: i);
+    if (!used.add(title)) {
+      final first = title.split(RegExp(r'\s+')).first;
+      var resolved = false;
+      for (var n = 0; n < _kPlaceholderLastNames.length; n++) {
+        final candidate = '$first ${_placeholderLastName(i + n + 1)}';
+        if (used.add(candidate)) {
+          title = candidate;
+          resolved = true;
+          break;
+        }
+      }
+      if (!resolved) {
+        title = _placeholderPatientName(i + used.length);
+        used.add(title);
+      }
+    }
+    titles.add(title);
+  }
+  return titles;
+}
+
+String _patientInitials(String name) {
+  final parts = name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((p) => p.isNotEmpty)
+      .toList();
+  if (parts.isEmpty) return '?';
+  if (parts.length == 1) {
+    return parts.first.substring(0, 1).toUpperCase();
+  }
+  return (parts.first.substring(0, 1) + parts.last.substring(0, 1))
+      .toUpperCase();
+}
+
+Color _patientAvatarColor(int index) {
+  const colors = [
+    Color(0xFF5C6BC0),
+    Color(0xFF26A69A),
+    Color(0xFFEF6C00),
+    Color(0xFF8D6E63),
+    Color(0xFF7E57C2),
+    Color(0xFF00897B),
+    Color(0xFFD81B60),
+    Color(0xFF3949AB),
+  ];
+  return colors[index % colors.length];
 }
 
 String _formatPatientCheckDate(dynamic createdAt) {
@@ -182,9 +308,9 @@ Widget buildBlueBox(String title, List<Widget> children) {
         margin: const EdgeInsets.symmetric(vertical: 10),
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: Colors.lightBlue[100],
+          color: Colors.blueAccent.shade100,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.lightBlue, width: 2),
+          border: Border.all(color: Colors.blueAccent, width: 2),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -216,13 +342,13 @@ Widget buildActionBox({
           margin: const EdgeInsets.symmetric(vertical: 8),
           padding: const EdgeInsets.all(18),
           decoration: BoxDecoration(
-            color: Colors.lightBlue[100],
+            color: Colors.blueAccent.shade100,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.lightBlue, width: 2),
+            border: Border.all(color: Colors.blueAccent, width: 2),
           ),
           child: Row(
             children: [
-              Icon(icon, size: 30, color: Colors.blue),
+              Icon(icon, size: 30, color: Colors.blueAccent),
               const SizedBox(width: 15),
               Text(title,
                   style: const TextStyle(
@@ -247,9 +373,9 @@ Widget buildDateBubble(String date, VoidCallback onTap) {
           padding:
           const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
           decoration: BoxDecoration(
-            color: Colors.lightBlue[50],
+            color: Colors.blueAccent.withValues(alpha: 0.12),
             borderRadius: BorderRadius.circular(15),
-            border: Border.all(color: Colors.lightBlue, width: 1.5),
+            border: Border.all(color: Colors.blueAccent, width: 1.5),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -292,7 +418,7 @@ class StaffHomePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("Stroke Patient Dashboard",
             style: TextStyle(fontSize: 22)),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.blueAccent,
       ),
       body: Column(
         children: [
@@ -331,24 +457,33 @@ class StaffHomePage extends StatelessWidget {
                     ),
                   );
                 }
+                final titles = _uniqueStaffPatientTitles(docs);
                 return ListView.builder(
                   itemCount: docs.length,
                   itemBuilder: (context, i) {
                     final doc = docs[i];
                     final data = doc.data();
                     final uid = doc.id;
-                    final title = _staffPatientListTitle(data, uid);
+                    final title = titles[i];
+                    final email = (data['email'] as String?)?.trim();
                     return Card(
                       margin: const EdgeInsets.symmetric(
                           horizontal: 20, vertical: 6),
                       child: ListTile(
-                        leading: const Icon(Icons.person, size: 30),
+                        leading: CircleAvatar(
+                          backgroundColor: _patientAvatarColor(i),
+                          foregroundColor: Colors.white,
+                          child: Text(
+                            _patientInitials(title),
+                            style: const TextStyle(fontWeight: FontWeight.w700),
+                          ),
+                        ),
                         title: Text(
                           title,
                           style: const TextStyle(fontSize: 18),
                         ),
                         subtitle: Text(
-                          uid,
+                          (email != null && email.isNotEmpty) ? email : uid,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: const TextStyle(fontSize: 12),
@@ -377,7 +512,8 @@ class StaffHomePage extends StatelessWidget {
               width: double.infinity,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue[200],
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 onPressed: () async {
@@ -529,7 +665,7 @@ class _PatientDashboardState
       appBar: AppBar(
         title: Text(widget.patientName,
             style: const TextStyle(fontSize: 22)),
-        backgroundColor: Colors.lightBlue,
+        backgroundColor: Colors.blueAccent,
         leading: currentView != "main"
             ? IconButton(
           icon: const Icon(Icons.arrow_back),

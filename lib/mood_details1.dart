@@ -65,10 +65,22 @@ class _MoodDetails1State extends State<MoodDetails1> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blueAccent,
+          title: const Text('Mood Check Results'),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
+      );
     }
     if (error.isNotEmpty) {
-      return Scaffold(body: Center(child: Text("Error: $error", style: const TextStyle(fontSize: 18))));
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blueAccent,
+          title: const Text('Mood Check Results'),
+        ),
+        body: Center(child: Text("Error: $error", style: const TextStyle(fontSize: 18))),
+      );
     }
 
     final moodToday = (entry['moodToday'] ?? '').toString();
@@ -79,6 +91,10 @@ class _MoodDetails1State extends State<MoodDetails1> {
     final insight = (entry['insight'] ?? '').toString();
 
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: const Text('Mood Check Results'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Center(
@@ -100,7 +116,7 @@ class _MoodDetails1State extends State<MoodDetails1> {
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
                   border: Border.all(width: 2),
-                  color: Colors.lightBlue[100],
+                  color: Colors.blueAccent.shade100,
                   borderRadius: BorderRadius.circular(25),
                 ),
                 child: Column(
@@ -142,7 +158,7 @@ class _MoodDetails1State extends State<MoodDetails1> {
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           border: Border.all(width: 2),
-          color: Colors.lightBlue[100],
+          color: Colors.blueAccent.shade100,
           borderRadius: BorderRadius.circular(25),
         ),
         child: Column(

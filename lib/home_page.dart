@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:swiftspeak/body_check.dart';
 import 'package:swiftspeak/communicate.dart';
+import 'package:swiftspeak/community_page.dart';
 import 'package:swiftspeak/login.dart';
 import 'package:swiftspeak/mood_check.dart';
 import 'package:swiftspeak/new_chat.dart';
@@ -17,10 +18,16 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
+  void initState() {
+    super.initState();
+    CommunityStore.instance.start();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue[100],
+        backgroundColor: Colors.blueAccent,
         title: const Text("Welcome"),
         actions: [
           IconButton(
@@ -88,10 +95,16 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage: NetworkImage(
-                                      "https://cdn-icons-png.flaticon.com/512/6522/6522516.png",
+                                  SizedBox(
+                                    width: 80,
+                                    height: 80,
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Image(
+                                        image: AssetImage(
+                                          'assets/icons/body_check.png',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 8),
@@ -129,10 +142,16 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage: NetworkImage(
-                                      "https://cdn-icons-png.flaticon.com/512/6522/6522516.png",
+                                  SizedBox(
+                                    width: 80,
+                                    height: 80,
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Image(
+                                        image: AssetImage(
+                                          'assets/icons/mood_check.png',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 8),
@@ -176,10 +195,19 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage: NetworkImage(
-                                      "https://cdn-icons-png.flaticon.com/512/6522/6522516.png",
+                                  SizedBox(
+                                    width: 80,
+                                    height: 80,
+                                    child: Padding(
+                                      padding: EdgeInsets.only(top: 12),
+                                      child: FittedBox(
+                                        fit: BoxFit.contain,
+                                        child: Image(
+                                          image: AssetImage(
+                                            'assets/icons/communication.png',
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 8),
@@ -223,10 +251,16 @@ class _HomePageState extends State<HomePage> {
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: const [
-                                  CircleAvatar(
-                                    radius: 30,
-                                    backgroundImage: NetworkImage(
-                                      "https://cdn-icons-png.flaticon.com/512/6522/6522516.png",
+                                  SizedBox(
+                                    width: 80,
+                                    height: 80,
+                                    child: FittedBox(
+                                      fit: BoxFit.contain,
+                                      child: Image(
+                                        image: AssetImage(
+                                          'assets/icons/chatbot.png',
+                                        ),
+                                      ),
                                     ),
                                   ),
                                   SizedBox(height: 8),
@@ -247,6 +281,60 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ],
                 ),
+
+                const SizedBox(height: 10),
+
+                /// COMMUNITY PAGE
+                InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const CommunityPage(),
+                      ),
+                    );
+                  },
+                  child: SizedBox(
+                    height: 150,
+                    width: 150,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          width: 1,
+                          color: Colors.grey,
+                        ),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          SizedBox(
+                            width: 88,
+                            height: 66,
+                            child: FittedBox(
+                              fit: BoxFit.contain,
+                              child: Image(
+                                image: AssetImage(
+                                  'assets/icons/community.png',
+                                ),
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            "Community Page",
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            "Share and find recovery support",
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
 
@@ -259,6 +347,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(fontSize: 22),
                 ),
                 onPressed: () async {
+                  await CommunityStore.instance.reset();
                   await FirebaseAuth.instance.signOut();
 
                   if (!mounted) return;

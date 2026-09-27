@@ -62,6 +62,10 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: const Text('Login'),
+      ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -101,7 +105,8 @@ class _LoginState extends State<Login> {
 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue[300],
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white,
               ),
               onPressed: loginUser,
               child: const Text("Login", style: TextStyle(fontSize: 18)),
@@ -113,7 +118,8 @@ class _LoginState extends State<Login> {
 
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.lightBlue[300],
+                backgroundColor: Colors.blueAccent,
+                foregroundColor: Colors.white,
               ),
               onPressed: () {
                 Navigator.push(

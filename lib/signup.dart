@@ -134,11 +134,17 @@ class _SignupState extends State<Signup> {
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: selected ? Colors.lightBlue[300] : Colors.grey[300],
+            color: selected ? Colors.blueAccent : Colors.grey[300],
             borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
-          child: Text(roleName, style: const TextStyle(fontSize: 16)),
+          child: Text(
+            roleName,
+            style: TextStyle(
+              fontSize: 16,
+              color: selected ? Colors.white : Colors.black87,
+            ),
+          ),
         ),
       ),
     );
@@ -155,6 +161,10 @@ class _SignupState extends State<Signup> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: const Text('Sign Up'),
+      ),
       body: Center(
         child: SingleChildScrollView( // ensures screen scrolls if keyboard covers fields
           child: Column(
@@ -228,7 +238,8 @@ class _SignupState extends State<Signup> {
               const SizedBox(height: 20),
               ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue[300],
+                  backgroundColor: Colors.blueAccent,
+                  foregroundColor: Colors.white,
                 ),
                 onPressed: _isLoading ? null : signUpUser,
                 child: Text(

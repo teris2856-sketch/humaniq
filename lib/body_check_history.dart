@@ -59,7 +59,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Body Check History"),
-        backgroundColor: Colors.lightBlue[300],
+        backgroundColor: Colors.blueAccent,
         centerTitle: true,
       ),
       body: SafeArea(
@@ -80,7 +80,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.lightBlue[50],
+                        fillColor: Colors.blueAccent.withValues(alpha: 0.08),
                       ),
                       items: months.map((month) {
                         return DropdownMenuItem(
@@ -105,7 +105,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         filled: true,
-                        fillColor: Colors.lightBlue[50],
+                        fillColor: Colors.blueAccent.withValues(alpha: 0.08),
                       ),
                       items: years.map((year) {
                         return DropdownMenuItem(
@@ -194,7 +194,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
                             child: Container(
                               height: 70,
                               decoration: BoxDecoration(
-                                color: Colors.lightBlue[100],
+                                color: Colors.blueAccent.shade100,
                                 borderRadius: BorderRadius.circular(25),
                                 border: Border.all(width: 2),
                                 boxShadow: [
@@ -211,7 +211,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
                                   style: TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.blue[900],
+                                    color: Colors.blueAccent.shade700,
                                   ),
                                 ),
                               ),
@@ -237,7 +237,7 @@ class _BodyCheckHistoryState extends State<BodyCheckHistory> {
                   ),
                   style: ElevatedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.lightBlue[400],
+                    backgroundColor: Colors.blueAccent,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),

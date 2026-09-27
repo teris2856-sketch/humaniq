@@ -3,7 +3,13 @@
 <plist version="1.0">
 <dict>
     <key>NSMicrophoneUsageDescription</key>
-    <string>This app uses text-to-speech for AI chat responses.</string>
+    <string>SwiftSpeak uses the microphone so you can dictate into the communication message box and record a sound for a button.</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>SwiftSpeak uses speech recognition to turn your speech into text on the communication board.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>SwiftSpeak uses your photos so you can put a personal picture on a communication button.</string>
+    <key>NSCameraUsageDescription</key>
+    <string>SwiftSpeak uses the camera so you can take a picture for a communication button.</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

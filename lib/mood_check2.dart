@@ -19,6 +19,10 @@ class _MoodCheck2State extends State<MoodCheck2> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: const Text('Mood Check'),
+      ),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Text("Stress Level", style: TextStyle(fontSize: 30)),

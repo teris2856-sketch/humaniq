@@ -121,7 +121,7 @@ class _AiChatbotState extends State<AiChatbot> {
         padding: const EdgeInsets.all(14),
         constraints: const BoxConstraints(maxWidth: 280),
         decoration: BoxDecoration(
-          color: message.isUser ? Colors.lightBlue[300] : Colors.white,
+          color: message.isUser ? Colors.blueAccent.shade100 : Colors.white,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Text(message.text, style: const TextStyle(fontSize: 16)),
@@ -132,14 +132,14 @@ class _AiChatbotState extends State<AiChatbot> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: Colors.blueAccent.withValues(alpha: 0.08),
 
       // ------------------ DRAWER ------------------
       drawer: Drawer(
         child: Column(
           children: [
             const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.lightBlue),
+              decoration: BoxDecoration(color: Colors.blueAccent),
               child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
@@ -221,7 +221,7 @@ class _AiChatbotState extends State<AiChatbot> {
 
       appBar: AppBar(
         title: const Text('AI Chatbot'),
-        backgroundColor: Colors.lightBlue[600],
+        backgroundColor: Colors.blueAccent,
       ),
 
       body: SafeArea(
@@ -236,7 +236,7 @@ class _AiChatbotState extends State<AiChatbot> {
                   style: TextStyle(color: Colors.white, fontSize: 18),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
+                  backgroundColor: Colors.blueAccent,
                 ),
                 onPressed: _isLoading ? null : _generateAiRecommendation,
               ),
@@ -278,7 +278,7 @@ class _AiChatbotState extends State<AiChatbot> {
                   const SizedBox(width: 8),
                   IconButton(
                     icon: const Icon(Icons.send,
-                        color: Colors.lightBlue, size: 30),
+                        color: Colors.blueAccent, size: 30),
                     onPressed: _isLoading ? null : _sendUserMessage,
                   ),
                 ],
@@ -290,7 +290,7 @@ class _AiChatbotState extends State<AiChatbot> {
               child: ElevatedButton(
                 onPressed: _speakLastAppMessage,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.lightBlue[600],
+                  backgroundColor: Colors.blueAccent,
                 ),
                 child: const Text(
                   "Text-to-Speech",

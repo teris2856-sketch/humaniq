@@ -104,13 +104,18 @@ class _BodyCheckDetails1State extends State<BodyCheckDetails1> {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.blueAccent,
+          title: const Text("Body Check Results"),
+        ),
+        body: const Center(child: CircularProgressIndicator()),
       );
     }
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
         title: const Text("Body Check Results"),
       ),
       body: Center(
@@ -206,7 +211,7 @@ class _BodyCheckDetails1State extends State<BodyCheckDetails1> {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         border: Border.all(width: 2),
-        color: Colors.lightBlue[100],
+        color: Colors.blueAccent.shade100,
         borderRadius: BorderRadius.circular(25),
       ),
       child: Text(

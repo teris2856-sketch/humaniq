@@ -19,6 +19,10 @@ class _MoodCheckState extends State<MoodCheck> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.blueAccent,
+        title: const Text('Mood Check'),
+      ),
       body: Center(
         child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           const Text("How are you doing today?", style: TextStyle(fontSize: 30)),

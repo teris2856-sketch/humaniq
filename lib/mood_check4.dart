@@ -37,7 +37,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
       return Scaffold(
         appBar: AppBar(
           title: const Text("Mood Check History"),
-          backgroundColor: Colors.lightBlue[300],
+          backgroundColor: Colors.blueAccent,
           centerTitle: true,
         ),
         body: const Center(
@@ -55,7 +55,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mood Check History"),
-        backgroundColor: Colors.lightBlue[300],
+        backgroundColor: Colors.blueAccent,
         centerTitle: true,
       ),
       body: SafeArea(
@@ -73,7 +73,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
                         labelText: "Month",
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         filled: true,
-                        fillColor: Colors.lightBlue[50],
+                        fillColor: Colors.blueAccent.withValues(alpha: 0.08),
                       ),
                       items: months.map((m) => DropdownMenuItem(value: m, child: Text(m))).toList(),
                       onChanged: (value) => setState(() => selectedMonth = value!),
@@ -87,7 +87,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
                         labelText: "Year",
                         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
                         filled: true,
-                        fillColor: Colors.lightBlue[50],
+                        fillColor: Colors.blueAccent.withValues(alpha: 0.08),
                       ),
                       items: years.map((y) => DropdownMenuItem(value: y, child: Text(y))).toList(),
                       onChanged: (value) => setState(() => selectedYear = value!),
@@ -153,7 +153,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
                             child: Container(
                               height: 70,
                               decoration: BoxDecoration(
-                                color: Colors.lightBlue[100],
+                                color: Colors.blueAccent.shade100,
                                 borderRadius: BorderRadius.circular(25),
                                 border: Border.all(width: 2),
                                 boxShadow: const [
@@ -170,7 +170,7 @@ class _MoodCheck4State extends State<MoodCheck4> {
                                   style: TextStyle(
                                     fontSize: 28,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.blue[900],
+                                    color: Colors.blueAccent.shade700,
                                   ),
                                 ),
                               ),
@@ -191,7 +191,8 @@ class _MoodCheck4State extends State<MoodCheck4> {
                   label: const Text("Back to Home", style: TextStyle(fontSize: 24)),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
-                    backgroundColor: Colors.lightBlue[400],
+                    backgroundColor: Colors.blueAccent,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                   ),
                   onPressed: () {
